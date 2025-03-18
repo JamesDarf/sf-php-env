@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML, CSS, JS On/Off 데모</title>
+    <link id="css-style" rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .box {
+            width: 200px;
+            height: 100px;
+            background-color: lightblue;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .buttons {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        #toggle-css { background: #007bff; color: white; }
+        #toggle-js { background: #28a745; color: white; }
+        button:hover { opacity: 0.8; }
+        .js-disabled { color: red; font-weight: bold; }
+        .moving-text {
+            position: relative;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .highlight-text {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="moving-text" id="moving-text">HTML, CSS, JavaScript On/Off 데모</h1>
+        <p id="instruction">버튼을 눌러 CSS 또는 JavaScript를 끄고 켤 수 있습니다.</p>
+        
+        <div class="buttons">
+            <button id="toggle-css">CSS Off</button>
+            <button id="toggle-js">JS Off</button>
+        </div>
+        
+        <div class="box">이것은 스타일이 적용된 박스입니다.</div>
+        <p id="message">JavaScript 상태 메시지</p>
+    </div>
+
+    <script id="js-script">
+        document.getElementById("message").textContent = "JavaScript가 정상적으로 로드됨!";
+        
+        document.getElementById("toggle-css").addEventListener("click", function() {
+            let cssLink = document.getElementById("css-style");
+            let instructionText = document.getElementById("instruction");
+            if (cssLink) {
+                cssLink.remove();
+                this.textContent = "CSS On";
+                document.body.style.backgroundColor = "white"; // CSS 제거 효과 강조
+                instructionText.classList.remove("highlight-text");
+            } else {
+                let newLink = document.createElement("link");
+                newLink.id = "css-style";
+                newLink.rel = "stylesheet";
+                newLink.href = "styles.css";
+                document.head.appendChild(newLink);
+                this.textContent = "CSS Off";
+                document.body.style.backgroundColor = "#f4f4f4"; // 원래 배경색 복구
+                instructionText.classList.add("highlight-text");
+            }
+        });
+
+        let animationFrame;
+        let textElement = document.getElementById("moving-text");
+        let position = 0;
+        let direction = 1;
+        
+        function moveText() {
+            position += direction * 2;
+            if (position > 100 || position < 0) {
+                direction *= -1; // 방향 반전
+            }
+            textElement.style.transform = `translateX(${position}px)`;
+            animationFrame = requestAnimationFrame(moveText);
+        }
+        moveText();
+        
+        document.getElementById("toggle-js").addEventListener("click", function() {
+            if (this.textContent === "JS Off") {
+                cancelAnimationFrame(animationFrame); // 애니메이션 중지
+                this.textContent = "JS On";
+                document.getElementById("message").textContent = "JavaScript가 비활성화됨!";
+                document.getElementById("message").classList.add("js-disabled");
+            } else {
+                moveText(); // 애니메이션 다시 시작
+                this.textContent = "JS Off";
+                document.getElementById("message").textContent = "JavaScript가 다시 활성화됨!";
+                document.getElementById("message").classList.remove("js-disabled");
+            }
+        });
+    </script>
+</body>
+</html>
